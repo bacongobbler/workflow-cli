@@ -158,8 +158,6 @@ func CheckConnection(client *http.Client, controllerURL url.URL) error {
 	errorMessage := `%s does not appear to be a valid Deis controller.
 Make sure that the Controller URI is correct and the server is running.`
 
-	baseURL := controllerURL.String()
-
 	controllerURL.Path = "/v2/"
 
 	req, err := http.NewRequest("GET", controllerURL.String(), bytes.NewBuffer(nil))
@@ -172,13 +170,13 @@ Make sure that the Controller URI is correct and the server is running.`
 	res, err := client.Do(req)
 
 	if err != nil {
-		fmt.Printf(errorMessage+"\n", baseURL)
+		fmt.Printf(errorMessage+"\n", controllerURL.String())
 		return err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != 401 {
-		return fmt.Errorf(errorMessage, baseURL)
+		return fmt.Errorf(errorMessage, controllerURL.String())
 	}
 
 	checkAPICompatibility(res.Header.Get("DEIS_API_VERSION"))
